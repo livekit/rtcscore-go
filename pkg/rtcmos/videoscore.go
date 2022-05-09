@@ -90,6 +90,5 @@ func normalizeVideoStat(input Stat) Stat {
 		}
 	}
 
-	input.VideoConfig = videoConfig
 	return input
 }

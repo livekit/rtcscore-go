@@ -19,9 +19,6 @@ func AudioScore(input Stat) Scores {
 	pl := float64(stat.PacketLoss)
 
 	audioConfig := stat.AudioConfig
-	if audioConfig == nil {
-		return Scores{}
-	}
 
 	// Ignore audio bitrate in dtx mode
 	var Ie float64
