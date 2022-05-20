@@ -14,8 +14,8 @@ const (
 type Stat struct {
 	PacketLoss    float32
 	Bitrate       int32
-	RoundTripTime int32
-	BufferDelay   int32
+	RoundTripTime *int32
+	BufferDelay   *int32
 	AudioConfig   *AudioConfig
 	VideoConfig   *VideoConfig
 }

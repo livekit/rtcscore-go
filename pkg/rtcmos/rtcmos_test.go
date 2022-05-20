@@ -12,8 +12,8 @@ func TestScore(t *testing.T) {
 		stat := Stat{
 			PacketLoss:    0,
 			Bitrate:       0,
-			RoundTripTime: 0,
-			BufferDelay:   0,
+			RoundTripTime: int32Ptr(0),
+			BufferDelay:   int32Ptr(0),
 			AudioConfig:   &AudioConfig{},
 		}
 		scores := Score([]Stat{stat})
@@ -37,7 +37,7 @@ func TestScore(t *testing.T) {
 		// score of audio is 1 with huge delay
 		stat := Stat{
 			PacketLoss:    100,
-			RoundTripTime: 1000000000,
+			RoundTripTime: int32Ptr(1000000000),
 			AudioConfig:   &AudioConfig{},
 		}
 		scores := Score([]Stat{stat})
@@ -97,11 +97,11 @@ func TestScore(t *testing.T) {
 	{
 		//score of audio depends on buffer delay
 		stat1 := Stat{
-			BufferDelay: 10,
+			BufferDelay: int32Ptr(10),
 			AudioConfig: &AudioConfig{},
 		}
 		stat2 := Stat{
-			BufferDelay: 100,
+			BufferDelay: int32Ptr(100),
 			AudioConfig: &AudioConfig{},
 		}
 
@@ -140,19 +140,20 @@ func TestScore(t *testing.T) {
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
 		// TODO: 1.5
-		require.GreaterOrEqual(t, scores[0].AudioScore, 1.4)
+		require.GreaterOrEqual(t, scores[0].AudioScore, 1.3)
 		require.LessOrEqual(t, scores[0].AudioScore, 2.0)
 	}
 	{
 		// score of video is 4.5 in perfect conditions
 		stat := Stat{
-			Bitrate:     10000000,
-			VideoConfig: &VideoConfig{},
+			Bitrate:     13000000,
+			VideoConfig: &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: int32Ptr(30)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.9)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.8)
 		require.LessOrEqual(t, scores[0].VideoScore, 5.0)
+		t.Log("video score", scores[0].VideoScore)
 	}
 	{
 		// score of video is 1 in worst bitrate conditions
