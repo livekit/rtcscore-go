@@ -43,7 +43,7 @@ func VideoScore(input Stat) Scores {
 		codecFactor = 1.2
 	}
 
-	delay := float64(stat.BufferDelay + stat.RoundTripTime/2)
+	delay := float64(*stat.BufferDelay + *stat.RoundTripTime/2)
 
 	var score Scores
 	// These parameters are generated with a logarithmic regression
@@ -62,8 +62,12 @@ func VideoScore(input Stat) Scores {
 }
 
 func normalizeVideoStat(input Stat) Stat {
-	if input.RoundTripTime == 0 {
-		input.RoundTripTime = DefaultRoundTripTime
+	if input.RoundTripTime == nil {
+		input.RoundTripTime = int32Ptr(DefaultRoundTripTime)
+	}
+
+	if input.BufferDelay == nil {
+		input.BufferDelay = int32Ptr(DefaultBufferDelay)
 	}
 	videoConfig := input.VideoConfig
 

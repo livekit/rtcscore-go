@@ -15,7 +15,7 @@ func AudioScore(input Stat) Scores {
 	stat := normalizeAudioStat(input)
 	const R0 = 100
 	// Assume 20 packetization delay
-	delay := float64(20 + stat.BufferDelay + stat.RoundTripTime/2)
+	delay := float64(20 + *stat.BufferDelay + *stat.RoundTripTime/2)
 	pl := float64(stat.PacketLoss)
 
 	audioConfig := stat.AudioConfig
@@ -51,9 +51,14 @@ func AudioScore(input Stat) Scores {
 }
 
 func normalizeAudioStat(input Stat) Stat {
-	if input.RoundTripTime == 0 {
-		input.RoundTripTime = DefaultRoundTripTime
+	if input.RoundTripTime == nil {
+		input.RoundTripTime = int32Ptr(DefaultRoundTripTime)
 	}
+
+	if input.BufferDelay == nil {
+		input.BufferDelay = int32Ptr(DefaultBufferDelay)
+	}
+
 	if input.AudioConfig.Fec == nil {
 		input.AudioConfig.Fec = boolPtr(true)
 	}
