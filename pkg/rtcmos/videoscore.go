@@ -52,7 +52,8 @@ func VideoScore(input Stat) Scores {
 	if *videoConfig.FrameRate != 0 {
 		frameRate := float64(*videoConfig.FrameRate)
 		bPPPF := (codecFactor * float64(stat.Bitrate)) / pixels / frameRate
-		base := clamp(0.56*math.Log(bPPPF)+5.36, 1, 5)
+		//base := clamp(0.56*math.Log(bPPPF)+5.36, 1, 5)
+		base := clamp(2.3*math.Log(bPPPF*29)+2.5, 1, 5)
 		MOS := base - 1.9*math.Log(float64(*videoConfig.ExpectedFrameRate)/frameRate) - delay*0.002
 		score.VideoScore = clamp(math.Round(MOS*100)/100, 1, 5)
 	} else {
