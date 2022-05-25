@@ -23,7 +23,7 @@ func ScaleFactor(ratio float64) float64 {
 	if ratio >= 0.2 {
 		return 0.7
 	}
-	return 0.6
+	return 0.55
 }
 
 // VideoConfig is used to specify the video configuration used
