@@ -13,7 +13,7 @@ const (
 // Stat defines the input parameter to calculate Score
 type Stat struct {
 	PacketLoss    float32
-	Bitrate       int32
+	Bitrate       float32
 	RoundTripTime *int32
 	BufferDelay   *int32
 	AudioConfig   *AudioConfig
@@ -51,6 +51,10 @@ func clamp(value, min, max float64) float64 {
 }
 
 func int32Ptr(x int32) *int32 {
+	return &x
+}
+
+func float32Ptr(x float32) *float32 {
 	return &x
 }
 
