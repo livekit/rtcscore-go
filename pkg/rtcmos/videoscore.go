@@ -11,59 +11,35 @@ const (
 	DefaultFrameRate = 30
 )
 
-func ScaleFactor(ratio float64) float64 {
-	if ratio >= 0.8 {
-		return ratio
-	}
-
-	if ratio >= 0.5 {
-		return 0.75
-	}
-
-	if ratio >= 0.2 {
-		return 0.7
-	}
-	return 0.6
-}
-
 // VideoConfig is used to specify the video configuration used
 type VideoConfig struct {
 	// Codec: video codec used - opus / vp8 / vp9 / h264
 	Codec string
 	// Width: Resolution of the video received
 	Width *int32
-	// ExpectedWidth: Resolution of the rendering widget
-	ExpectedWidth *int32
 	// Height: Resolution of the video received
 	Height *int32
-	// ExpectedHeight: Resolution of the rendering widget
-	ExpectedHeight *int32
 	// FrameRate: FrameRate of the video received
-	FrameRate *int32
+	FrameRate *float32
 	// ExpectedFrameRate: FrameRate of the video source
-	ExpectedFrameRate *int32
+	ExpectedFrameRate *float32
 }
 
 // VideoScore - MOS calculation based on logarithmic regression
 func VideoScore(input Stat) Scores {
-
 	stat := normalizeVideoStat(input)
 	videoConfig := stat.VideoConfig
 	if videoConfig == nil {
 		return Scores{}
 	}
-	actualPixels := float64(*videoConfig.Width * *videoConfig.Height)
-	scaleFactor := 1.0
-	if *videoConfig.ExpectedWidth != *videoConfig.Width || *videoConfig.ExpectedHeight != *videoConfig.Height {
-		expectedPixels := float64(*videoConfig.ExpectedWidth * *videoConfig.ExpectedHeight)
-		if expectedPixels > actualPixels {
-			ratio := actualPixels / expectedPixels
-			scaleFactor = ScaleFactor(ratio)
-		}
-	}
 	codecFactor := 1.0
 	if strings.ToLower(videoConfig.Codec) == "vp9" {
+		// assuming approximately 83% of vp8/h.264 bitrate for same quality
 		codecFactor = 1.2
+	}
+	if strings.ToLower(videoConfig.Codec) == "av1" {
+		// assuming approximately 70% of vp8/h.264 bitrate for same quality
+		codecFactor = 1.43
 	}
 
 	delay := float64(*stat.BufferDelay + *stat.RoundTripTime/2)
@@ -74,12 +50,27 @@ func VideoScore(input Stat) Scores {
 	// They are based on the bits per pixel per frame (bPPPF)
 	if *videoConfig.FrameRate != 0 {
 		frameRate := float64(*videoConfig.FrameRate)
-		bPPPF := (codecFactor * float64(stat.Bitrate)) / actualPixels / frameRate
-		//base := clamp(2.3*math.Log(bPPPF*29)+2.3, 1, 5)
-		//base := clamp(0.56*math.Log(bPPPF)+5.36, 1, 5)
-		base := clamp(2.3*math.Log(bPPPF*29)+3.1, 1, 5)
-		MOS := base - 1.9*math.Log(float64(*videoConfig.ExpectedFrameRate)/frameRate) - delay*0.002
-		score.VideoScore = scaleFactor * clamp(math.Round(MOS*100)/100, 1, 5)
+		pixels := float64(*videoConfig.Width * *videoConfig.Height)
+		bPPPF := (codecFactor * float64(stat.Bitrate)) / pixels / frameRate
+
+		//
+		// A bit of speculation on logarithmic regression equation from https://github.com/ggarber/rtcscore
+		// base := clamp(0.56*math.Log(bPPPF)+5.36, 1, 5)
+		//
+		// Assuming that derivation is based on Chrome (libwebrtc) simulcast default settings.
+		// That would be 2.5 Mbps for 1280 x 720 (https://chromium.googlesource.com/external/webrtc/+/master/media/engine/simulcast.cc#83).
+		// That piece of code does not specify frame rate.
+		// But, assuming a frame rate of 30 fps, the equation above would yield a score of approximately 4.01
+		// under perfect conditions, i. e. no delay or jitter and expected frame rate matching actual frame rate.
+		//
+		// LK clients by default use 1.7 Mbps for 720p30 for vp8/h.264.
+		// That yields a score of approximately 3.8 using the above equation again under perfect conditions.
+		// The perceived quality is good at that bit rate (based on user perception),
+		// So, using a theshold like 3.5 MOS for declaring good quality should be fine.
+		//
+		base := clamp(0.56*math.Log(bPPPF)+5.36, 1, 5)
+
+		score.VideoScore = clamp(base-1.9*math.Log(float64(*videoConfig.ExpectedFrameRate)/frameRate)-delay*0.002, 1, 5)
 	} else {
 		score.VideoScore = 1
 	}
@@ -104,15 +95,7 @@ func normalizeVideoStat(input Stat) Stat {
 	}
 
 	if input.VideoConfig.FrameRate == nil {
-		input.VideoConfig.FrameRate = int32Ptr(DefaultFrameRate)
-	}
-
-	if input.VideoConfig.ExpectedHeight == nil {
-		input.VideoConfig.ExpectedHeight = input.VideoConfig.Height
-	}
-
-	if input.VideoConfig.ExpectedWidth == nil {
-		input.VideoConfig.ExpectedWidth = input.VideoConfig.Width
+		input.VideoConfig.FrameRate = float32Ptr(DefaultFrameRate)
 	}
 
 	if input.VideoConfig.ExpectedFrameRate == nil {

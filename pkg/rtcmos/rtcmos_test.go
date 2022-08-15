@@ -14,77 +14,73 @@ const (
 func TestSpatialLayer(t *testing.T) {
 	{
 		stat := Stat{
-			Bitrate: 620000,
-			VideoConfig: &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: int32Ptr(15),
-				ExpectedWidth: int32Ptr(1280), ExpectedHeight: int32Ptr(720)},
+			Bitrate:       620000,
+			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
-		t.Log("spatial high-mid", scores[0].VideoScore)
-		//require.GreaterOrEqual(t, scores[0].VideoScore, 4.9)
+		t.Log("mid - high bitrate", scores[0].VideoScore)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.0)
 	}
 	{
 		stat := Stat{
-			Bitrate: 310000,
-			VideoConfig: &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: int32Ptr(15),
-				ExpectedWidth: int32Ptr(640), ExpectedHeight: int32Ptr(360)},
+			Bitrate:       310000,
+			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
-		t.Log("spatial mid-low", scores[0].VideoScore)
-		//require.GreaterOrEqual(t, scores[0].VideoScore, 4.9)
+		t.Log("low - high bitrate", scores[0].VideoScore)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.75)
 	}
 	{
 		stat := Stat{
-			Bitrate: 310000,
-			VideoConfig: &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: int32Ptr(15),
-				ExpectedWidth: int32Ptr(1280), ExpectedHeight: int32Ptr(720)},
+			Bitrate:       1700000,
+			VideoConfig:   &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: float32Ptr(30)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 
 		scores := Score([]Stat{stat})
-		t.Log("spatial high-low", scores[0].VideoScore)
-		//require.GreaterOrEqual(t, scores[0].VideoScore, 4.9)
+		t.Log("high - high bitrate", scores[0].VideoScore)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 3.75)
 	}
-
 }
 
-func TestIdealScores(t *testing.T) {
+func TestHighLayer(t *testing.T) {
 	{
 		stat := Stat{
 			Bitrate:       2100000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: int32Ptr(30)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: float32Ptr(30)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("720x1280x30fpsx2.1Mbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.9)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 3.9)
 	}
 	{
 		stat := Stat{
 			Bitrate:       2000000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: int32Ptr(30)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: float32Ptr(30)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("720x1280x30fpsx2Mbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.5)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 3.85)
 	}
 	{
 		stat := Stat{
 			Bitrate:       1500000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: int32Ptr(30)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: float32Ptr(30)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("720x1280x30fpsx1.5Mbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.0)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 3.7)
 	}
 }
 
@@ -92,29 +88,29 @@ func TestMediumLayer(t *testing.T) {
 	{
 		stat := Stat{
 			Bitrate:       620000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("640x360x15fpsx620Kbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.9)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.35)
 	}
 	{
 		stat := Stat{
 			Bitrate:       550000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("640x360x15fpsx550Kbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.5)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.3)
 	}
 	{
 		stat := Stat{
 			Bitrate:       450000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
@@ -125,7 +121,7 @@ func TestMediumLayer(t *testing.T) {
 	{
 		stat := Stat{
 			Bitrate:       350000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
@@ -136,7 +132,7 @@ func TestMediumLayer(t *testing.T) {
 	{
 		stat := Stat{
 			Bitrate:       250000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(360), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
@@ -150,51 +146,51 @@ func TestLowLayer(t *testing.T) {
 	{
 		stat := Stat{
 			Bitrate:       310000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("380x180x15fpsx310Kbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.9)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.75)
 	}
 	{
 		stat := Stat{
 			Bitrate:       260000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("380x180x15fpsx260Kbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.5)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.65)
 	}
 	{
 		stat := Stat{
 			Bitrate:       210000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("380x180x15fpsx210Kbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.0)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.55)
 	}
 	{
 		stat := Stat{
 			Bitrate:       170000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
 		scores := Score([]Stat{stat})
 		t.Log("380x180x15fpsx170Kbps", scores[0].VideoScore)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 3.5)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.4)
 	}
 	{
 		stat := Stat{
 			Bitrate:       110000,
-			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: int32Ptr(15)},
+			VideoConfig:   &VideoConfig{Width: int32Ptr(320), Height: int32Ptr(180), FrameRate: float32Ptr(15)},
 			BufferDelay:   int32Ptr(Jitter),
 			RoundTripTime: int32Ptr(Rtt),
 		}
@@ -228,13 +224,12 @@ func TestScore(t *testing.T) {
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
 		require.GreaterOrEqual(t, scores[0].AudioScore, 1.0)
-		// TODO: 1.1
 		require.LessOrEqual(t, scores[0].AudioScore, 1.2)
 	}
 	{
 		// score of audio is 1 with huge delay
 		stat := Stat{
-			PacketLoss:    100,
+			PacketLoss:    0,
 			RoundTripTime: int32Ptr(1000000000),
 			AudioConfig:   &AudioConfig{},
 		}
@@ -342,14 +337,14 @@ func TestScore(t *testing.T) {
 		require.LessOrEqual(t, scores[0].AudioScore, 2.0)
 	}
 	{
-		// score of video is 4.5 in perfect conditions
+		// very high video score in perfect conditions
 		stat := Stat{
 			Bitrate:     13000000,
-			VideoConfig: &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: int32Ptr(30)},
+			VideoConfig: &VideoConfig{Width: int32Ptr(1280), Height: int32Ptr(720), FrameRate: float32Ptr(30)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 4.8)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 4.75)
 		require.LessOrEqual(t, scores[0].VideoScore, 5.0)
 	}
 	{
@@ -367,7 +362,7 @@ func TestScore(t *testing.T) {
 		// score of video is 1 in worst framerate conditions
 		stat := Stat{
 			Bitrate:     10000000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(1), ExpectedFrameRate: int32Ptr(30)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(1), ExpectedFrameRate: float32Ptr(30)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
@@ -378,7 +373,7 @@ func TestScore(t *testing.T) {
 		// score of video is 1 if no framerate is received
 		stat := Stat{
 			Bitrate:     100000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(0)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(0)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
@@ -400,18 +395,18 @@ func TestScore(t *testing.T) {
 		// score is not good on low bitrate conditions
 		stat := Stat{
 			Bitrate:     200000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(25)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(25)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
-		require.GreaterOrEqual(t, scores[0].VideoScore, 1.5)
-		require.LessOrEqual(t, scores[0].VideoScore, 2.5)
+		require.GreaterOrEqual(t, scores[0].VideoScore, 2.5)
+		require.LessOrEqual(t, scores[0].VideoScore, 3.5)
 	}
 	{
 		// score is not good on average bitrate conditions but low framerate
 		stat := Stat{
 			Bitrate:     500000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(8), ExpectedFrameRate: int32Ptr(25)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(8), ExpectedFrameRate: float32Ptr(25)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
@@ -422,7 +417,7 @@ func TestScore(t *testing.T) {
 		// score is average on average framerate conditions
 		stat := Stat{
 			Bitrate:     400000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(25), ExpectedFrameRate: int32Ptr(30)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(25), ExpectedFrameRate: float32Ptr(30)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
@@ -433,7 +428,7 @@ func TestScore(t *testing.T) {
 		// score is average on control conditions one
 		stat := Stat{
 			Bitrate:     300000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(20), Width: int32Ptr(640), Height: int32Ptr(480)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(20), Width: int32Ptr(640), Height: int32Ptr(480)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
@@ -444,7 +439,7 @@ func TestScore(t *testing.T) {
 		// score is average on control conditions two
 		stat := Stat{
 			Bitrate:     400000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(20), Width: int32Ptr(640), Height: int32Ptr(480)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(20), Width: int32Ptr(640), Height: int32Ptr(480)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)
@@ -483,11 +478,11 @@ func TestScore(t *testing.T) {
 		// score of video depends on framerate
 		stat1 := Stat{
 			Bitrate:     200000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(15), ExpectedFrameRate: int32Ptr(15)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(15), ExpectedFrameRate: float32Ptr(15)},
 		}
 		stat2 := Stat{
 			Bitrate:     200000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(15), ExpectedFrameRate: int32Ptr(30)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(15), ExpectedFrameRate: float32Ptr(30)},
 		}
 		scores := Score([]Stat{stat1, stat2})
 		require.Len(t, scores, 2)
@@ -497,11 +492,11 @@ func TestScore(t *testing.T) {
 		// score of video depends on resolution
 		stat1 := Stat{
 			Bitrate:     200000,
-			VideoConfig: &VideoConfig{Width: int32Ptr(100), Height: int32Ptr(100), ExpectedWidth: int32Ptr(100), ExpectedHeight: int32Ptr(100)},
+			VideoConfig: &VideoConfig{Width: int32Ptr(100), Height: int32Ptr(100)},
 		}
 		stat2 := Stat{
 			Bitrate:     200000,
-			VideoConfig: &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(480), ExpectedWidth: int32Ptr(640), ExpectedHeight: int32Ptr(480)},
+			VideoConfig: &VideoConfig{Width: int32Ptr(640), Height: int32Ptr(480)},
 		}
 		scores := Score([]Stat{stat1, stat2})
 		require.Len(t, scores, 2)
@@ -511,7 +506,7 @@ func TestScore(t *testing.T) {
 		// score of video is 1 for 0 framerate
 		stat := Stat{
 			Bitrate:     200000,
-			VideoConfig: &VideoConfig{FrameRate: int32Ptr(0), ExpectedFrameRate: int32Ptr(0)},
+			VideoConfig: &VideoConfig{FrameRate: float32Ptr(0), ExpectedFrameRate: float32Ptr(0)},
 		}
 		scores := Score([]Stat{stat})
 		require.Len(t, scores, 1)

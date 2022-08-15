@@ -1,6 +1,8 @@
 package rtcmos
 
-import "math"
+import (
+	"math"
+)
 
 // AudioConfig is used to specify audio configuration used
 type AudioConfig struct {
@@ -38,12 +40,13 @@ func AudioScore(input Stat) Scores {
 	}
 
 	Ipl := Ie + (100-Ie)*(pl/(pl+Bpl))
+
 	delayFactor := float64(0)
 	if delay > 150 {
-		delayFactor = 0.1 * delay
+		delayFactor = 0.1 * (delay - 150)
 	}
-
 	Id := delay*0.03 + delayFactor
+
 	R := clamp(R0-Ipl-Id, 0, 100)
 	MOS := 1 + 0.035*R + (R*(R-60)*(100-R)*7)/1000000
 
