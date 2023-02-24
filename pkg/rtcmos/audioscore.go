@@ -41,7 +41,7 @@ func AudioScore(input Stat) Scores {
 		Bpl = 20
 	}
 	if *audioConfig.Red {
-		// with 2 packets redundancy,  should be able to absorb 2 our of every 3 packets lost without quality impact,
+		// with 2 packets redundancy, should be able to absorb 2 out of every 3 packets lost without quality impact,
 		// set this value so that even significant loss rate (i. e. something like 10%) does not affect score a lot.
 		Bpl = 90
 	}
