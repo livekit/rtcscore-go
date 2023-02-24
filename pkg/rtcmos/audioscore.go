@@ -10,6 +10,8 @@ type AudioConfig struct {
 	Fec *bool
 	// Dtx: flag to pass opus discontinuous transmission status
 	Dtx *bool
+	// Red: Flag to pass RED (Redundant Encoding) enabled
+	Red *bool
 }
 
 // AudioScore - MOS calculation based on E-Model algorithm
@@ -37,6 +39,11 @@ func AudioScore(input Stat) Scores {
 	Bpl := float64(10)
 	if *audioConfig.Fec {
 		Bpl = 20
+	}
+	if *audioConfig.Red {
+		// with 2 packets redundancy, should be able to absorb 2 out of every 3 packets lost without quality impact,
+		// set this value so that even significant loss rate (i. e. something like 10%) does not affect score a lot.
+		Bpl = 90
 	}
 
 	Ipl := Ie + (100-Ie)*(pl/(pl+Bpl))
@@ -67,6 +74,9 @@ func normalizeAudioStat(input Stat) Stat {
 	}
 	if input.AudioConfig.Dtx == nil {
 		input.AudioConfig.Dtx = boolPtr(false)
+	}
+	if input.AudioConfig.Red == nil {
+		input.AudioConfig.Red = boolPtr(false)
 	}
 
 	return input
