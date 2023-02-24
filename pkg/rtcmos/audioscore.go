@@ -10,7 +10,7 @@ type AudioConfig struct {
 	Fec *bool
 	// Dtx: flag to pass opus discontinuous transmission status
 	Dtx *bool
-	// Red: Flag to pass opus red enabled
+	// Red: Flag to pass RED (Redundant Encoding) enabled
 	Red *bool
 }
 
